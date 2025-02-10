@@ -1,0 +1,32 @@
+{% extends "admin/base.html" %}
+
+{% load static %}  <!-- This ensures that the static tag is loaded -->
+
+{% block extrahead %}
+    {{ block.super }}  <!-- This ensures the default content of extrahead block is preserved -->
+
+    <!-- Dynamically set Favicon based on the Website model -->
+    {% if website %}
+        {% if website.image %}
+            <link rel="shortcut icon" href="{{ website.image.url }}" type="image/x-icon">
+        {% else %}
+            <!-- Fallback to default favicon if the website image is missing -->
+            <link rel="shortcut icon" href="{% static 'assets/images/rms.png' %}" type="image/x-icon">
+        {% endif %}
+    {% else %}
+        <!-- Fallback favicon if no website object is available -->
+        <link rel="shortcut icon" href="{% static 'assets/images/rms.png' %}" type="image/x-icon">
+    {% endif %}
+{% endblock %}
+
+{% block title %}
+    {{ site_title }} | Admin Portal
+{% endblock %}
+
+{% block branding %}
+    <h1 id="site-name">
+        <a href="{% url 'admin:index' %}" title="Django site admin">
+            {{ site_header }}
+        </a>
+    </h1>
+{% endblock %}

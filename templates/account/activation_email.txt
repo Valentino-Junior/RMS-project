@@ -1,0 +1,12 @@
+Hi {{ user.username }},
+
+Thank you for signing up at {{ site_name }}! We are excited to have you as a member.
+
+To activate your account, please click on the following link or copy-paste it into your browser:
+
+{{ domain }}/account/activate/{{ uid }}/{{ token }}
+
+If you did not sign up for an account, please ignore this email. If you have any issues, feel free to contact us at support@{{ site_name }}.
+
+Best regards,
+The {{ site_name }} Team

@@ -1,0 +1,19 @@
+# Ignore the .env file to keep sensitive info out of version control
+.env
+
+# Ignore Python bytecode files
+*.pyc
+*.pyo
+__pycache__
+
+# Ignore virtual environment directories
+venv/
+env/
+.env/
+
+# Ignore static and media files if you are handling them via external services or storage
+/static/
+/media/
+
+# Ignore local database files
+db.sqlite3

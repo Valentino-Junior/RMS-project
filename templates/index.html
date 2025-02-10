@@ -1,0 +1,350 @@
+{% load static  %}
+{% static "images" as baseUrl %}
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Site made with company Website Builder v5.9.18, {% url 'index' %} -->
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="company v5.9.18, company.com">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+  <link rel="shortcut icon" href="{{website.0.image.url}}" type="image/x-icon">
+  <meta name="description" content="{{section1_data.0.description }}"> 
+  <meta name="title" content="{{section1_data.0.title}}">
+  
+  <title>{{website.0.website_title}} | Home</title>
+  <!-- For Android browsers (Chrome, Firefox, etc.) -->
+  <meta name="theme-color" content="#000000">
+  <!-- For iOS Safari -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="stylesheet" href="{% static 'assets/web/assets/company-icons2/company2.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/web/assets/company-icons-bold/company-icons-bold.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/bootstrap/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/bootstrap/css/bootstrap-grid.min.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/bootstrap/css/bootstrap-reboot.min.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/animatecss/animate.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/dropdown/css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/socicon/css/styles.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/theme/css/style.css' %}">
+  <link rel="preload" href="https://fonts.googleapis.com/css?family=Inter+Tight:100,200,300,400,500,600,700,800,900,100i,200i,300i,400i,500i,600i,700i,800i,900i&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter+Tight:100,200,300,400,500,600,700,800,900,100i,200i,300i,400i,500i,600i,700i,800i,900i&display=swap"></noscript>
+  <link rel="preload" as="style" href="{% static 'assets/company/css/mbr-additional.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/company/css/mbr-additional.css' %}" type="text/css">
+  <style>
+    label {
+    display: inline-block;
+    color: #de4233;
+    }
+    @media (max-width: 991px) {
+    .cid-tJS6tZXiPa .navbar-collapse {
+        z-index: -1 !important;
+        position: absolute;
+        top: 110%;
+        left: 0;
+        width: 100%;
+        padding: 1rem;
+        border-radius: 1.5rem;
+        background: #1cff00;
+        opacity: 1;
+        border-color: #1cff00 !important;
+        background: #de4233 !important;
+        backdrop-filter: blur(8px);
+    }
+    }
+  </style>
+
+
+
+</head>
+<body>
+<!--Section  Navbar-->
+<section data-bs-version="5.1" class="menu menu2 cid-tJS6tZXiPa" once="menu" id="menu02-0">
+
+
+    <nav class="navbar navbar-dropdown navbar-fixed-top navbar-expand-lg">
+        <div class="container" style="background: #de4233 !important;">
+            <div class="navbar-brand">
+                <span class="navbar-logo">
+                    <a href="{% url 'index' %}">
+                        <img src="{{website.0.image.url}}" alt="company Website Builder" style="height: 3rem;">
+                    </a>
+                </span>
+                <span class="navbar-caption-wrap"><a class="navbar-caption text-info display-4" href="{% url 'index' %}" style="#fff !important;">{{website.0.website_title}}</a></span>
+            </div>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbarSupportedContent" data-bs-target="#navbarSupportedContent" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav nav-dropdown" data-app-modern-menu="true">
+                    <li class="nav-item">
+                        <a class="nav-link link text-info display-4" href="{% url 'index' %}#form03-1r" style="color: #fff !important;"><span class="mbrib-mobile2 mbr-iconfont mbr-iconfont-btn"></span >{{website.0.menu3}}</a>
+                    </li><li class="nav-item">
+                        <a class="nav-link link text-info display-4" href="{% url 'about' %}" style="color: #fff !important;"><span class="mbrib-info mbr-iconfont mbr-iconfont-btn"></span>{{website.0.menu1}}</a>
+                    </li></ul><!--
+                <div class="icons-menu">
+                    <a class="iconfont-wrapper" href="{% url 'profile' %}" style="color: #fff !important;">
+                        <span class="p-2 mbr-iconfont mbrib-user"></span>
+                    </a>
+                    <a class="iconfont-wrapper" href="{% url 'signup' %}" style="color: #fff !important;">
+                        <span class="p-2 mbr-iconfont mbrib-unlock"></span>
+                    </a>
+                    <a class="iconfont-wrapper" href="{% url 'signin' %}" style="color: #fff !important;">
+                        <span class="p-2 mbr-iconfont mbrib-login"></span>
+                    </a>
+
+                </div> -->
+                <div class="navbar-buttons mbr-section-btn"><a class="btn btn-info display-4" href="{{website.0.button_link}}"><span class="mbrib-key mbr-iconfont mbr-iconfont-btn"></span>{{website.0.button_text}}</a></div>
+            </div>
+        </div>
+    </nav>
+</section>
+<!--Section  1-->
+<section data-bs-version="5.1" class="header8 cid-usWMvFABDP" id="header08-1i">
+    <div class="container-fluid">
+        <div class="row content-wrapper justify-content-center">
+            <div class="col-lg-7 mbr-form">
+                <div class="text-wrapper align-left" data-form-type="formoid">
+                    <form action=" " method="POST" class="mbr-form form-with-styler" data-form-title="Form Name">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="subscription">
+                        <div class="dragArea row">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <h1 class="mbr-section-title mbr-fonts-style mb-4 display-1">
+                                    <strong>{{section1_data.0.title }}</strong>
+                                </h1>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <p class="mbr-text mbr-fonts-style mb-4 display-7">
+                                    {{section1_data.0.description }}
+                                </p>
+                            </div>
+                            <div data-for="email" class="col-lg-6 col-md-6 col-sm-12">
+                                {{ form.email }}
+                            </div>
+                            <div class="col-auto mbr-section-btn">
+                                <button type="submit" class="w-100 btn btn-primary display-7" style="background-color: #de4233 !important; border-color: #de4233 !important;">
+                                    <span class="{{section1_data.0.icon}} mbr-iconfont mbr-iconfont-btn"></span>{{section1_data.0.button}}
+                                </button>
+                            </div>
+                            <div class="row" style="margin-top: 20px;">
+                            {% if messages %}
+                                {% for subscriptionmessage in messages %}
+                                        <div style="border-radius: 40px !important;background-color: #1cff00 !important; color: #000000 !important;" data-form-alert="" class="alert alert-{{ message.tags }} col-12  w-100 btn btn-info display-7">{{ subscriptionmessage }}</div>
+                                {% endfor %}
+                            {% endif %}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-5 col-12">
+                <div class="image-wrapper">
+                    <img class="w-100" src="{{section1_data.0.image.url }}" alt="company Website Builder">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Section  10-->
+<section data-bs-version="5.1" class="contacts01 cid-usWN87tofo" id="contacts01-1q">
+
+
+
+
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-12 content-head">
+                <div class="mbr-section-head mb-5">
+                    <h3 class="mbr-section-title mbr-fonts-style align-center mb-0 display-2">
+                        <strong>{{section10_data.0.title}}</strong>
+                    </h3>
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="item features-without-image col-12 col-md-6 active">
+                <div class="item-wrapper">
+                    <div class="text-wrapper">
+                        <h6 class="card-title mbr-fonts-style mb-3 display-5">
+                            <strong>Phone</strong>
+                        </h6>
+                        <p class="mbr-text mbr-fonts-style display-7">
+                            <a href="tel:{{section10_data.0.phone}}" class="text-primary" style="color: #de4233 !important;">{{section10_data.0.phone}}</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="item features-without-image col-12 col-md-6">
+                <div class="item-wrapper">
+                    <div class="text-wrapper">
+                        <h6 class="card-title mbr-fonts-style mb-3 display-5">
+                            <strong>Email</strong>
+                        </h6>
+                        <p class="mbr-text mbr-fonts-style display-7">
+                            <a href="mailto:{{section10_data.0.email}}" class="text-primary" style="color: #de4233 !important;">{{section10_data.0.email}}</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="item features-without-image col-12 col-md-6">
+                <div class="item-wrapper">
+                    <div class="text-wrapper">
+                        <h6 class="card-title mbr-fonts-style mb-3 display-5">
+                            <strong>Address</strong>
+                        </h6>
+                        <p class="mbr-text mbr-fonts-style display-7">
+                            {{section10_data.0.address}}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="item features-without-image col-12 col-md-6">
+                <div class="item-wrapper">
+                    <div class="text-wrapper">
+                        <h6 class="card-title mbr-fonts-style mb-3 display-5">
+                            <strong>Working Hours</strong>
+                        </h6>
+                        <p class="mbr-text mbr-fonts-style display-7">
+                            {{section10_data.0.working_hours}}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Section  11-->
+<section data-bs-version="5.1" class="form03 cid-usWNbxdSRz" id="form03-1r">
+
+
+
+
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg item-wrapper">
+                <div class="mbr-section-head mb-5">
+                    <h3 class="mbr-section-title mbr-fonts-style align-center mb-0 display-2">
+                        <strong>Contact us</strong>
+                    </h3>
+
+                </div>
+                <div class="col-lg-12 mx-auto mbr-form" data-form-type="formoid">
+                    <form action="" method="POST" class="mbr-form form-with-styler" data-form-title="Form Name"><input type="hidden" name="email" data-form-email="true">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="messages">
+                        <div class="row" style="border-radius: 40px !important;">
+                                {% for message_forms in messages_forms %}
+                                    <div style="border-radius: 40px !important;background-color: #64ff00 !important; color: #000 !important;" data-form-alert="" class="alert alert-{{ message.tags }} alert alert-danger col-12 w-100 btn btn-info display-7">{{ message_forms }}</div>
+                                {% endfor %}
+                
+                        </div>
+                        <div class="dragArea row">
+                            <div class="col-md col-sm-12 form-group mb-3 mb-3 " data-for="name">
+                                {{ messages_form.name.label_tag }}  <!-- Add label if necessary -->
+                                {{ messages_form.name }}
+                                {% if messages_form.name.errors %}
+                                    <div class="text-danger">
+                                        {% for error in messages_form.name.errors %}
+                                            <p>{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md col-sm-12 form-group mb-3 mb-3" data-for="email">
+                                {{ messages_form.email.label_tag }}  <!-- Add label if necessary -->
+                                {{ messages_form.email }}
+                                {% if messages_form.email.errors %}
+                                    <div class="text-danger">
+                                        {% for error in messages_form.email.errors %}
+                                            <p>{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-12 form-group mb-3 mb-3" data-for="phone">
+                                {{ messages_form.phone.label_tag }}  <!-- Add label if necessary -->
+                                {{ messages_form.phone }}
+                                {% if messages_form.phone.errors %}
+                                    <div class="text-danger">
+                                        {% for error in messages_form.phone.errors %}
+                                            <p>{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-12 form-group mb-3 mb-3" data-for="message">
+                                {{ messages_form.message.label_tag }}  <!-- Add label if necessary -->
+                                {{ messages_form.message }}
+                                {% if messages_form.message.errors %}
+                                    <div class="text-danger">
+                                        {% for error in messages_form.message.errors %}
+                                            <p>{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 align-center mbr-section-btn">
+                                <button type="submit" name="submit_message" class="btn btn-primary display-7" style="background-color: #de4233 !important; border-color: #de4233 !important;">
+                                    Send message&nbsp;
+                                <span class="mobi-mbri mobi-mbri-paper-plane mbr-iconfont mbr-iconfont-btn"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="image-wrapper">
+                    <img class="w-100" src="{{website.0.footer_image.url}}" alt="company Website Builder">
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- Section 13 -->
+<section data-bs-version="5.1" class="form03 cid-usWNbxdSRz"  id="map01-3">
+	
+	
+	
+	
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-12 content-head">
+                <div class="mbr-section-head mb-5">
+					<h3 class="mbr-section-title mbr-fonts-style align-center mb-0 display-2">
+						<strong>{{section13_data.0.name}}</strong>
+					</h3>
+					
+				</div>
+			</div>
+		</div>
+		<div class="google-map">
+		    <iframe frameborder="0" style="border:0; height:500px !important" src="{{section13_data.0.google_map}}" allowfullscreen="">
+		    </iframe>
+		</div>
+	</div>
+</section>
+
+<script src="{% static 'assets/bootstrap/js/bootstrap.bundle.min.js' %}"></script>  
+<script src="{% static 'assets/smoothscroll/smooth-scroll.js' %}"></script>
+<script src="{% static 'assets/ytplayer/index.js' %}"></script>
+<script src="{% static 'assets/dropdown/js/navbar-dropdown.js' %}"></script>
+<script src="{% static 'assets/theme/js/script.js' %}"></script>
+<script src="{% static 'assets/formoid/formoid.min.js' %}"></script>
+<div id="scrollToTop" class="scrollToTop mbr-arrow-up">
+    <a style="text-align: center;">
+    <i class="mbr-arrow-up-icon mbr-arrow-up-icon-cm cm-icon cm-icon-smallarrow-up"></i>
+    </a>
+</div>
+<input name="animation" type="hidden">
+</body>
+</html>
