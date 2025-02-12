@@ -95,14 +95,11 @@ class PhysicalCasinoForm(forms.Form):
         }),
         empty_label="Select Category"
     )
-    subcategory = forms.ModelChoiceField(
-        queryset=BusinessSubCategory.objects.all(),
-        widget=forms.Select(attrs={
-            'class': 'form-control',
-            'id': 'physical-casino-subcategory',
-            'required': True
-        }),
-        empty_label="Select Subcategory"
+    # Adding a hidden subcategory field with default value
+    subcategory = forms.CharField(
+        widget=forms.HiddenInput(),
+        required=False,
+        initial='default'
     )
     date = forms.DateField(
         widget=forms.DateInput(attrs={
@@ -129,14 +126,11 @@ class BookmakerForm(forms.Form):
         }),
         empty_label="Select Category"
     )
-    subcategory = forms.ModelChoiceField(
-        queryset=BusinessSubCategory.objects.all(),
-        widget=forms.Select(attrs={
-            'class': 'form-control',
-            'id': 'bookmaker-subcategory',
-            'required': True
-        }),
-        empty_label="Select Subcategory"
+    # Adding a hidden subcategory field with default value
+    subcategory = forms.CharField(
+        widget=forms.HiddenInput(),
+        required=False,
+        initial='default'
     )
     date = forms.DateField(
         widget=forms.DateInput(attrs={
@@ -191,14 +185,11 @@ class OnlineGamingForm(forms.Form):
         }),
         empty_label="Select Category"
     )
-    subcategory = forms.ModelChoiceField(
-        queryset=BusinessSubCategory.objects.all(),
-        widget=forms.Select(attrs={
-            'class': 'form-control',
-            'id': 'online-gaming-subcategory',
-            'required': True
-        }),
-        empty_label="Select Subcategory"
+    # Adding a hidden subcategory field with default value
+    subcategory = forms.CharField(
+        widget=forms.HiddenInput(),
+        required=False,
+        initial='default'
     )
     date = forms.DateField(
         widget=forms.DateInput(attrs={

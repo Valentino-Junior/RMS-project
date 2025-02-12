@@ -269,7 +269,7 @@ class CompanyProfile(models.Model):
 class BookmakerSubmission(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.ForeignKey(BusinessCategory, on_delete=models.CASCADE)
-    subcategory = models.ForeignKey(BusinessSubCategory, on_delete=models.CASCADE)
+    subcategory = models.ForeignKey(BusinessSubCategory, null=True, blank=True, on_delete=models.SET_NULL)
     date = models.DateField()
     sales = models.DecimalField(max_digits=10, decimal_places=2)
     payout = models.DecimalField(max_digits=10, decimal_places=2)
@@ -281,7 +281,7 @@ class BookmakerSubmission(models.Model):
 class OnlineGamingSubmission(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.ForeignKey(BusinessCategory, on_delete=models.CASCADE)
-    subcategory = models.ForeignKey(BusinessSubCategory, on_delete=models.CASCADE)
+    subcategory = models.ForeignKey(BusinessSubCategory, null=True, blank=True, on_delete=models.SET_NULL)
     date = models.DateField()
     total_sales = models.DecimalField(max_digits=10, decimal_places=2)
     total_payout = models.DecimalField(max_digits=10, decimal_places=2)
@@ -293,7 +293,7 @@ class OnlineGamingSubmission(models.Model):
 class PhysicalCasinoSubmission(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.ForeignKey('BusinessCategory', on_delete=models.CASCADE)
-    subcategory = models.ForeignKey('BusinessSubCategory', on_delete=models.CASCADE)
+    subcategory = models.ForeignKey(BusinessSubCategory, null=True, blank=True, on_delete=models.SET_NULL)
     date = models.DateField()
     amount_totals = models.DecimalField(max_digits=10, decimal_places=2)
 

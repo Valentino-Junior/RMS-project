@@ -542,6 +542,7 @@
                             <tr>
                                 <th>#</th>
                                 <th>Type</th>
+                                <th>Category</th>
                                 <th>Subcategory</th>
                                 <th>Date</th>
                                 <th>Sales</th>
@@ -558,6 +559,7 @@
                                 <tr>
                                     <td>{{ forloop.counter }}</td>
                                     <td>{{ submission.type }}</td>
+                                    <td>{{ submission.category }}</td>
                                     <td>{{ submission.subcategory }}</td>
                                     <td>{{ submission.date|date:"Y-m-d" }}</td>
                                     <td>{% if submission.sales %}${{ submission.sales|floatformat:2 }}{% else %}N/A{% endif %}</td>
@@ -718,109 +720,141 @@
     <br>
 
 
-    <script>
-        // Function to update subcategories based on selected category
-        function updateSubcategories(formId) {
-            const form = document.getElementById(formId);
-            if (!form) return;
-        
-            const categorySelect = form.querySelector('[name="category"]');
-            const subcategorySelect = form.querySelector('[name="subcategory"]');
-            
-            if (!categorySelect || !subcategorySelect) return;
-        
-            categorySelect.addEventListener('change', function() {
-                const categoryId = this.value;
-                if (!categoryId) {
-                    subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
-                    return;
-                }
-        
-                // Show loading state
-                subcategorySelect.innerHTML = '<option value="">Loading...</option>';
-        
-                // Fetch subcategories from server
-                fetch(`/get-subcategories/?category_id=${categoryId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
-                        data.forEach(subcategory => {
-                            const option = document.createElement('option');
-                            option.value = subcategory.id;
-                            option.textContent = subcategory.name;
-                            subcategorySelect.appendChild(option);
-                        });
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        subcategorySelect.innerHTML = '<option value="">Error loading subcategories</option>';
-                    });
-            });
-        }
-        
-        // Function to calculate win/loss or GGR
-        function setupCalculations(formId) {
-            const form = document.getElementById(formId);
-            if (!form) return;
-        
-            const salesInput = form.querySelector('[name="sales"], [name="total_sales"]');
-            const payoutInput = form.querySelector('[name="payout"], [name="total_payout"]');
-            const resultInput = form.querySelector('[name="win_loss"], [name="ggr"]');
-        
-            if (salesInput && payoutInput && resultInput) {
-                const calculate = () => {
-                    const sales = parseFloat(salesInput.value) || 0;
-                    const payout = parseFloat(payoutInput.value) || 0;
-                    resultInput.value = (sales - payout).toFixed(2);
-                };
-        
-                salesInput.addEventListener('input', calculate);
-                payoutInput.addEventListener('input', calculate);
-            }
-        }
-        
-        // Initialize form functionality when document is ready
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize each form
-            const forms = [
-                'bookmaker-form',
-                'online-gaming-form',
-                'physical-casino-form',
-                'lottery-form'
-            ];
-        
-            forms.forEach(formId => {
-                updateSubcategories(formId);
-                setupCalculations(formId);
-            });
-        
-            // Add form submission handling
-            forms.forEach(formId => {
-                const form = document.getElementById(formId);
-                if (form) {
-                    form.addEventListener('submit', function(e) {
-                        const category = form.querySelector('[name="category"]').value;
-                        const subcategory = form.querySelector('[name="subcategory"]').value;
-        
-                        if (!category || !subcategory) {
-                            e.preventDefault();
-                            alert('Please select both category and subcategory');
-                            return false;
-                        }
-                    });
-                }
-            });
-        });
-        
-        // Success message handling
-        {% if messages %}
-            {% for message in messages %}
-                if (message.tags === 'success') {
-                    alert('{{ message }}');
-                }
-            {% endfor %}
-        {% endif %}
-    </script>
+   <script>
+   // Function to update subcategories (only for lottery form)
+function updateSubcategories(formId) {
+   const form = document.getElementById(formId);
+   if (!form) return;
+
+   const categorySelect = form.querySelector('[name="category"]');
+   const subcategorySelect = form.querySelector('[name="subcategory"]');
+   
+   if (!categorySelect || !subcategorySelect) return;
+
+   categorySelect.addEventListener('change', function() {
+       const categoryId = this.value;
+       if (!categoryId) {
+           subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
+           return;
+       }
+
+       // Show loading state
+       subcategorySelect.innerHTML = '<option value="">Loading...</option>';
+
+       // Fetch subcategories from server
+       fetch(`/get-subcategories/?category_id=${categoryId}`)
+           .then(response => response.json())
+           .then(data => {
+               subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
+               data.forEach(subcategory => {
+                   const option = document.createElement('option');
+                   option.value = subcategory.id;
+                   option.textContent = subcategory.name;
+                   subcategorySelect.appendChild(option);
+               });
+           })
+           .catch(error => {
+               console.error('Error:', error);
+               subcategorySelect.innerHTML = '<option value="">Error loading subcategories</option>';
+           });
+   });
+}
+
+// Function to calculate win/loss or GGR
+function setupCalculations(formId) {
+   const form = document.getElementById(formId);
+   if (!form) return;
+
+   let salesInput, payoutInput, resultInput;
+
+   // Set up input fields based on form type
+   if (formId === 'online-gaming-form') {
+       salesInput = form.querySelector('[name="total_sales"]');
+       payoutInput = form.querySelector('[name="total_payout"]');
+       resultInput = form.querySelector('[name="ggr"]');
+   } else {
+       salesInput = form.querySelector('[name="sales"]');
+       payoutInput = form.querySelector('[name="payout"]');
+       resultInput = form.querySelector('[name="win_loss"]');
+   }
+
+   if (salesInput && payoutInput && resultInput) {
+       const calculate = () => {
+           const sales = parseFloat(salesInput.value) || 0;
+           const payout = parseFloat(payoutInput.value) || 0;
+           resultInput.value = (sales - payout).toFixed(2);
+       };
+
+       salesInput.addEventListener('input', calculate);
+       payoutInput.addEventListener('input', calculate);
+   }
+}
+
+// Main form initialization and handling
+document.addEventListener('DOMContentLoaded', function() {
+   // Get all forms
+   const forms = document.querySelectorAll('form');
+   
+   forms.forEach(form => {
+       const formId = form.id;
+       
+       // Only setup subcategories for lottery form
+       if (formId === 'lottery-form') {
+           updateSubcategories(formId);
+       }
+
+       // Setup calculations for all forms except physical casino
+       if (formId !== 'physical-casino-form') {
+           setupCalculations(formId);
+       }
+
+       // Form submission handling
+       form.addEventListener('submit', function(e) {
+           // Check all required fields
+           const requiredFields = form.querySelectorAll('[required]');
+           let isValid = true;
+
+           requiredFields.forEach(field => {
+               if (!field.value.trim()) {
+                   e.preventDefault();
+                   alert(`Please fill in ${field.name}`);
+                   isValid = false;
+                   return;
+               }
+           });
+
+           if (!isValid) return;
+
+           // Check category
+           const category = form.querySelector('[name="category"]');
+           if (!category.value) {
+               e.preventDefault();
+               alert('Please select a category');
+               return;
+           }
+
+           // Only validate subcategory for lottery form
+           if (formId === 'lottery-form') {
+               const subcategory = form.querySelector('[name="subcategory"]');
+               if (!subcategory.value) {
+                   e.preventDefault();
+                   alert('Please select a subcategory');
+                   return;
+               }
+           }
+       });
+   });
+});
+
+// Message handling for form submission responses
+{% if messages %}
+   {% for message in messages %}
+       if (message.tags === 'success') {
+           alert('{{ message }}');
+       }
+   {% endfor %}
+{% endif %}
+   </script>
 
 <style>
     /* Form styling */

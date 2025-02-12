@@ -683,7 +683,7 @@ def dashboard(request):
                 BookmakerSubmission.objects.create(
                     user=request.user,
                     category=form.cleaned_data['category'],
-                    subcategory=form.cleaned_data['subcategory'],
+                    subcategory=None,  # Set to None for non-lottery submissions
                     date=form.cleaned_data['date'],
                     sales=form.cleaned_data['sales'],
                     payout=form.cleaned_data['payout'],
@@ -698,7 +698,7 @@ def dashboard(request):
                 OnlineGamingSubmission.objects.create(
                     user=request.user,
                     category=form.cleaned_data['category'],
-                    subcategory=form.cleaned_data['subcategory'],
+                    subcategory=None,  # Set to None for non-lottery submissions
                     date=form.cleaned_data['date'],
                     total_sales=form.cleaned_data['total_sales'],
                     total_payout=form.cleaned_data['total_payout'],
@@ -713,7 +713,7 @@ def dashboard(request):
                 PhysicalCasinoSubmission.objects.create(
                     user=request.user,
                     category=form.cleaned_data['category'],
-                    subcategory=form.cleaned_data['subcategory'],
+                    subcategory=None,  # Set to None for non-lottery submissions
                     date=form.cleaned_data['date'],
                     amount_totals=form.cleaned_data['amount_totals']
                 )
@@ -734,9 +734,8 @@ def dashboard(request):
                 )
                 messages.success(request, 'Lottery submission successful!')
                 return redirect('dashboard')
-        
-        # If form is not valid, show error message
-        if 'form' in locals() and not form.is_valid():
+
+        if not form.is_valid():
             messages.error(request, 'Please correct the errors in the form.')
 
     # Get filter parameters
@@ -809,7 +808,7 @@ def dashboard(request):
                 'date': submission.date,
                 'type': 'Bookmaker',
                 'category': submission.category.name if submission.category else 'N/A',
-                'subcategory': submission.subcategory.name if submission.subcategory else 'N/A',
+                'subcategory': 'N/A',
                 'sales': submission.sales,
                 'payout': submission.payout,
                 'win_loss': submission.win_loss,
@@ -825,7 +824,7 @@ def dashboard(request):
                 'date': submission.date,
                 'type': 'Online Gaming',
                 'category': submission.category.name if submission.category else 'N/A',
-                'subcategory': submission.subcategory.name if submission.subcategory else 'N/A',
+                'subcategory': 'N/A',
                 'sales': None,
                 'payout': None,
                 'win_loss': None,
@@ -841,7 +840,7 @@ def dashboard(request):
                 'date': submission.date,
                 'type': 'Physical Casino',
                 'category': submission.category.name if submission.category else 'N/A',
-                'subcategory': submission.subcategory.name if submission.subcategory else 'N/A',
+                'subcategory': 'N/A',
                 'sales': None,
                 'payout': None,
                 'win_loss': None,
@@ -916,7 +915,7 @@ def dashboard(request):
         notification_frequency_labels = json.dumps([str(day['created_at__day']) for day in notification_frequency])
         notification_frequency_data = json.dumps([day['count'] for day in notification_frequency])
 
-        # Account updates (profile picture changes)
+        # Account updates
         account_updates = ProfilePicture.objects.filter(
             user=request.user,
             updated_at__month=current_month,
@@ -931,7 +930,6 @@ def dashboard(request):
         notification_frequency_data = json.dumps([])
         account_updates = 0
 
-   
     # Prepare forms
     bookmaker_form = BookmakerForm()
     online_gaming_form = OnlineGamingForm()
@@ -953,6 +951,7 @@ def dashboard(request):
         'login_frequency_data': login_frequency_data,
         'notification_frequency_labels': notification_frequency_labels,
         'notification_frequency_data': notification_frequency_data,
+        'account_updates': account_updates,
         'user_submissions': all_submissions,
         'total_sales': total_sales,
         'total_payout': total_payout,
@@ -964,11 +963,6 @@ def dashboard(request):
         'selected_type': submission_type,
         'start_date': start_date.strftime("%Y-%m-%d") if start_date else "",
         'end_date': end_date.strftime("%Y-%m-%d") if end_date else "",
-        'login_frequency_labels': login_frequency_labels,
-        'login_frequency_data': login_frequency_data,
-        'notification_frequency_labels': notification_frequency_labels,
-        'notification_frequency_data': notification_frequency_data,
-        'account_updates': account_updates,
         'submission_types': [
             ('', 'All Types'),
             ('bookmaker', 'Bookmaker'),
@@ -1469,7 +1463,6 @@ def admin_dashboard(request):
             'sales': submission.sales,
             'payout': submission.payout,
             'win_loss': submission.win_loss,
-            'subcategory': submission.subcategory.name
         })
 
     for submission in online_gaming_data:
@@ -1480,7 +1473,6 @@ def admin_dashboard(request):
             'sales': submission.total_sales,
             'payout': submission.total_payout,
             'win_loss': submission.ggr,
-            'subcategory': submission.subcategory.name
         })
 
     for submission in physical_casino_data:
@@ -1491,7 +1483,6 @@ def admin_dashboard(request):
             'sales': submission.amount_totals,
             'payout': 0,
             'win_loss': submission.amount_totals,
-            'subcategory': submission.subcategory.name
         })
 
     for submission in lottery_data:
