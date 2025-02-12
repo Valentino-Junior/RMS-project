@@ -673,59 +673,7 @@ def server_error(request):
 
 @login_required(login_url='/account/signin/')
 def dashboard(request):
-    # Fetch the user's profile picture, if it exists
-    profile_picture = ProfilePicture.objects.get(user=request.user) if ProfilePicture.objects.filter(user=request.user).exists() else None
-
-    # Count unread notifications
-    unread_notifications_count = Notification.objects.filter(user=request.user, read=False).count()
-
-    # Fetch the user's profile data
-    profile = Profile.objects.get(user=request.user) if Profile.objects.filter(user=request.user).exists() else None
-
-    # Fetch all websites (adjust this as necessary for your use case)
-    website = Website.objects.all()
-
-    # Fetch user information like last login and date joined
-    last_login = request.user.last_login
-    date_joined = request.user.date_joined
-
-    # Get current month and year
-    current_month = datetime.now().month
-    current_year = datetime.now().year
-
-    # Get login frequency (daily count of logins for current month)
-    login_frequency = Notification.objects.filter(
-        created_at__month=current_month,
-        created_at__year=current_year
-    ).values('created_at__day').annotate(count=Count('created_at')).order_by('created_at__day')
-
-    # Get notification frequency (daily count of notifications for current month)
-    notification_frequency = Notification.objects.filter(
-        user=request.user,
-        created_at__month=current_month,
-        created_at__year=current_year
-    ).values('created_at__day').annotate(count=Count('created_at')).order_by('created_at__day')
-
-    # Count the account updates (e.g., profile picture updates)
-    account_updates = ProfilePicture.objects.filter(
-        user=request.user,
-        updated_at__month=current_month,
-        updated_at__year=current_year
-    ).count()
-
-    # Extract labels and data for graphs
-    login_frequency_labels = [str(day['created_at__day']) for day in login_frequency]
-    login_frequency_data = [day['count'] for day in login_frequency]
-    notification_frequency_labels = [str(day['created_at__day']) for day in notification_frequency]
-    notification_frequency_data = [day['count'] for day in notification_frequency]
-
-    # Instantiate the forms
-    bookmaker_form = BookmakerForm(request.POST or None)
-    online_gaming_form = OnlineGamingForm(request.POST or None)
-    physical_casino_form = PhysicalCasinoForm(request.POST or None)
-    lottery_form = LotteryForm(request.POST or None)
-
-    # Handle form submissions
+    # Handle POST requests (form submissions) first
     if request.method == 'POST':
         form_type = request.POST.get('form_type')
         
@@ -743,8 +691,6 @@ def dashboard(request):
                 )
                 messages.success(request, 'Bookmaker submission successful!')
                 return redirect('dashboard')
-            else:
-                messages.error(request, 'Please correct the errors below.')
                 
         elif form_type == 'online_gaming':
             form = OnlineGamingForm(request.POST)
@@ -760,8 +706,6 @@ def dashboard(request):
                 )
                 messages.success(request, 'Online Gaming submission successful!')
                 return redirect('dashboard')
-            else:
-                messages.error(request, 'Please correct the errors below.')
                 
         elif form_type == 'physical_casino':
             form = PhysicalCasinoForm(request.POST)
@@ -775,8 +719,6 @@ def dashboard(request):
                 )
                 messages.success(request, 'Physical Casino submission successful!')
                 return redirect('dashboard')
-            else:
-                messages.error(request, 'Please correct the errors below.')
                 
         elif form_type == 'lottery':
             form = LotteryForm(request.POST)
@@ -792,17 +734,209 @@ def dashboard(request):
                 )
                 messages.success(request, 'Lottery submission successful!')
                 return redirect('dashboard')
-            else:
-                messages.error(request, 'Please correct the errors below.')
+        
+        # If form is not valid, show error message
+        if 'form' in locals() and not form.is_valid():
+            messages.error(request, 'Please correct the errors in the form.')
 
-    # Fetch the user's submissions for the new table card
+    # Get filter parameters
+    submission_type = request.GET.get('submission_type')
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    # Fetch user's profile picture
+    profile_picture = ProfilePicture.objects.get(user=request.user) if ProfilePicture.objects.filter(user=request.user).exists() else None
+
+    # Count unread notifications
+    unread_notifications_count = Notification.objects.filter(user=request.user, read=False).count()
+
+    # Fetch the user's profile data
+    profile = Profile.objects.get(user=request.user) if Profile.objects.filter(user=request.user).exists() else None
+
+    # Fetch website data
+    website = Website.objects.all()
+
+    # Get current month and year
+    current_month = datetime.now().month
+    current_year = datetime.now().year
+
+    # Base querysets
     bookmaker_submissions = BookmakerSubmission.objects.filter(user=request.user)
     online_gaming_submissions = OnlineGamingSubmission.objects.filter(user=request.user)
     physical_casino_submissions = PhysicalCasinoSubmission.objects.filter(user=request.user)
     lottery_submissions = LotterySubmission.objects.filter(user=request.user)
 
-    # Combine all submissions into one queryset for displaying in the table
-    user_submissions = list(bookmaker_submissions) + list(online_gaming_submissions) + list(physical_casino_submissions) + list(lottery_submissions)
+    # Apply date filters if provided
+    if start_date and end_date:
+        start_date = make_aware(datetime.strptime(start_date, "%Y-%m-%d"))
+        end_date = make_aware(datetime.strptime(end_date, "%Y-%m-%d"))
+        
+        bookmaker_submissions = bookmaker_submissions.filter(date__range=[start_date, end_date])
+        online_gaming_submissions = online_gaming_submissions.filter(date__range=[start_date, end_date])
+        physical_casino_submissions = physical_casino_submissions.filter(date__range=[start_date, end_date])
+        lottery_submissions = lottery_submissions.filter(date__range=[start_date, end_date])
+
+    # Calculate totals for each type
+    bookmaker_totals = bookmaker_submissions.aggregate(
+        total_sales=Sum('sales'),
+        total_payout=Sum('payout'),
+        total_win_loss=Sum('win_loss')
+    )
+
+    online_gaming_totals = online_gaming_submissions.aggregate(
+        total_sales=Sum('total_sales'),
+        total_payout=Sum('total_payout'),
+        total_ggr=Sum('ggr')
+    )
+
+    physical_casino_totals = physical_casino_submissions.aggregate(
+        total_amount=Sum('amount_totals')
+    )
+
+    lottery_totals = lottery_submissions.aggregate(
+        total_sales=Sum('sales'),
+        total_payout=Sum('payout'),
+        total_win_loss=Sum('win_loss')
+    )
+
+    # Initialize empty list for all submissions
+    all_submissions = []
+
+    # Add submissions based on filter
+    if not submission_type or submission_type == 'bookmaker':
+        for submission in bookmaker_submissions:
+            all_submissions.append({
+                'date': submission.date,
+                'type': 'Bookmaker',
+                'category': submission.category.name if submission.category else 'N/A',
+                'subcategory': submission.subcategory.name if submission.subcategory else 'N/A',
+                'sales': submission.sales,
+                'payout': submission.payout,
+                'win_loss': submission.win_loss,
+                'total_sales': None,
+                'total_payout': None,
+                'ggr': None,
+                'amount_totals': None
+            })
+
+    if not submission_type or submission_type == 'online_gaming':
+        for submission in online_gaming_submissions:
+            all_submissions.append({
+                'date': submission.date,
+                'type': 'Online Gaming',
+                'category': submission.category.name if submission.category else 'N/A',
+                'subcategory': submission.subcategory.name if submission.subcategory else 'N/A',
+                'sales': None,
+                'payout': None,
+                'win_loss': None,
+                'total_sales': submission.total_sales,
+                'total_payout': submission.total_payout,
+                'ggr': submission.ggr,
+                'amount_totals': None
+            })
+
+    if not submission_type or submission_type == 'physical_casino':
+        for submission in physical_casino_submissions:
+            all_submissions.append({
+                'date': submission.date,
+                'type': 'Physical Casino',
+                'category': submission.category.name if submission.category else 'N/A',
+                'subcategory': submission.subcategory.name if submission.subcategory else 'N/A',
+                'sales': None,
+                'payout': None,
+                'win_loss': None,
+                'total_sales': None,
+                'total_payout': None,
+                'ggr': None,
+                'amount_totals': submission.amount_totals
+            })
+
+    if not submission_type or submission_type == 'lottery':
+        for submission in lottery_submissions:
+            all_submissions.append({
+                'date': submission.date,
+                'type': 'Lottery',
+                'category': submission.category.name if submission.category else 'N/A',
+                'subcategory': submission.subcategory.name if submission.subcategory else 'N/A',
+                'sales': submission.sales,
+                'payout': submission.payout,
+                'win_loss': submission.win_loss,
+                'total_sales': None,
+                'total_payout': None,
+                'ggr': None,
+                'amount_totals': None
+            })
+
+    # Sort all submissions by date
+    all_submissions.sort(key=lambda x: x['date'], reverse=True)
+
+    # Calculate grand totals
+    total_sales = (
+        (bookmaker_totals['total_sales'] or 0) +
+        (online_gaming_totals['total_sales'] or 0) +
+        (lottery_totals['total_sales'] or 0)
+    )
+
+    total_payout = (
+        (bookmaker_totals['total_payout'] or 0) +
+        (online_gaming_totals['total_payout'] or 0) +
+        (lottery_totals['total_payout'] or 0)
+    )
+
+    total_win_loss = (
+        (bookmaker_totals['total_win_loss'] or 0) +
+        (online_gaming_totals['total_ggr'] or 0) +
+        (lottery_totals['total_win_loss'] or 0) +
+        (physical_casino_totals['total_amount'] or 0)
+    )
+
+    # Get activity data with better error handling
+    try:
+        # Login frequency data
+        login_frequency = Notification.objects.filter(
+            created_at__month=current_month,
+            created_at__year=current_year
+        ).values('created_at__day').annotate(
+            count=Count('created_at')
+        ).order_by('created_at__day')
+
+        # Convert QuerySet to lists for JSON serialization
+        login_frequency_labels = json.dumps([str(day['created_at__day']) for day in login_frequency])
+        login_frequency_data = json.dumps([day['count'] for day in login_frequency])
+
+        # Notification frequency data
+        notification_frequency = Notification.objects.filter(
+            user=request.user,
+            created_at__month=current_month,
+            created_at__year=current_year
+        ).values('created_at__day').annotate(
+            count=Count('created_at')
+        ).order_by('created_at__day')
+
+        notification_frequency_labels = json.dumps([str(day['created_at__day']) for day in notification_frequency])
+        notification_frequency_data = json.dumps([day['count'] for day in notification_frequency])
+
+        # Account updates (profile picture changes)
+        account_updates = ProfilePicture.objects.filter(
+            user=request.user,
+            updated_at__month=current_month,
+            updated_at__year=current_year
+        ).count()
+
+    except Exception as e:
+        print(f"Error fetching chart data: {str(e)}")
+        login_frequency_labels = json.dumps([])
+        login_frequency_data = json.dumps([])
+        notification_frequency_labels = json.dumps([])
+        notification_frequency_data = json.dumps([])
+        account_updates = 0
+
+   
+    # Prepare forms
+    bookmaker_form = BookmakerForm()
+    online_gaming_form = OnlineGamingForm()
+    physical_casino_form = PhysicalCasinoForm()
+    lottery_form = LotteryForm()
 
     context = {
         'username': request.user.username,
@@ -813,18 +947,35 @@ def dashboard(request):
         'unread_notifications_count': unread_notifications_count,
         'profile': profile,
         'website': website,
-        'last_login': last_login,
-        'date_joined': date_joined,
+        'last_login': request.user.last_login,
+        'date_joined': request.user.date_joined,
+        'login_frequency_labels': login_frequency_labels,
+        'login_frequency_data': login_frequency_data,
+        'notification_frequency_labels': notification_frequency_labels,
+        'notification_frequency_data': notification_frequency_data,
+        'user_submissions': all_submissions,
+        'total_sales': total_sales,
+        'total_payout': total_payout,
+        'total_win_loss': total_win_loss,
+        'bookmaker_form': bookmaker_form,
+        'online_gaming_form': online_gaming_form,
+        'physical_casino_form': physical_casino_form,
+        'lottery_form': lottery_form,
+        'selected_type': submission_type,
+        'start_date': start_date.strftime("%Y-%m-%d") if start_date else "",
+        'end_date': end_date.strftime("%Y-%m-%d") if end_date else "",
         'login_frequency_labels': login_frequency_labels,
         'login_frequency_data': login_frequency_data,
         'notification_frequency_labels': notification_frequency_labels,
         'notification_frequency_data': notification_frequency_data,
         'account_updates': account_updates,
-        'bookmaker_form': bookmaker_form,
-        'online_gaming_form': online_gaming_form,
-        'physical_casino_form': physical_casino_form,
-        'lottery_form': lottery_form,
-        'user_submissions': user_submissions,  # Add user submissions to context
+        'submission_types': [
+            ('', 'All Types'),
+            ('bookmaker', 'Bookmaker'),
+            ('online_gaming', 'Online Gaming'),
+            ('physical_casino', 'Physical Casino'),
+            ('lottery', 'Lottery')
+        ]
     }
 
     return render(request, 'account/dashboard.html', context)
@@ -1218,7 +1369,7 @@ def admin_dashboard(request):
     # Get filter parameters
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
-    category = request.GET.get('category')
+    submission_type = request.GET.get('submission_type')  # Changed from category to submission_type
 
     # Base querysets
     bookmaker_data = BookmakerSubmission.objects.all()
@@ -1236,36 +1387,71 @@ def admin_dashboard(request):
         physical_casino_data = physical_casino_data.filter(date__range=[start_date, end_date])
         lottery_data = lottery_data.filter(date__range=[start_date, end_date])
 
-    # Apply category filter if provided
-    if category:
-        bookmaker_data = bookmaker_data.filter(category_id=category)
-        online_gaming_data = online_gaming_data.filter(category_id=category)
-        physical_casino_data = physical_casino_data.filter(category_id=category)
-        lottery_data = lottery_data.filter(category_id=category)
+    # Apply submission type filter if provided
+    if submission_type:
+        if submission_type == 'bookmaker':
+            online_gaming_data = online_gaming_data.none()
+            physical_casino_data = physical_casino_data.none()
+            lottery_data = lottery_data.none()
+        elif submission_type == 'online_gaming':
+            bookmaker_data = bookmaker_data.none()
+            physical_casino_data = physical_casino_data.none()
+            lottery_data = lottery_data.none()
+        elif submission_type == 'physical_casino':
+            bookmaker_data = bookmaker_data.none()
+            online_gaming_data = online_gaming_data.none()
+            lottery_data = lottery_data.none()
+        elif submission_type == 'lottery':
+            bookmaker_data = bookmaker_data.none()
+            online_gaming_data = online_gaming_data.none()
+            physical_casino_data = physical_casino_data.none()
 
-    # Calculate totals
+    # Calculate totals with proper aggregation
+    bookmaker_totals = bookmaker_data.aggregate(
+        total_sales=Sum('sales'),
+        total_payout=Sum('payout'),
+        total_win_loss=Sum('win_loss')
+    )
+    
+    online_gaming_totals = online_gaming_data.aggregate(
+        total_sales=Sum('total_sales'),
+        total_payout=Sum('total_payout'),
+        total_ggr=Sum('ggr')
+    )
+    
+    lottery_totals = lottery_data.aggregate(
+        total_sales=Sum('sales'),
+        total_payout=Sum('payout'),
+        total_win_loss=Sum('win_loss')
+    )
+    
+    physical_casino_totals = physical_casino_data.aggregate(
+        total_amount=Sum('amount_totals')
+    )
+
+    # Calculate grand totals
     total_sales = (
-        bookmaker_data.aggregate(Sum('sales'))['sales__sum'] or 0 +
-        online_gaming_data.aggregate(Sum('total_sales'))['total_sales__sum'] or 0 +
-        lottery_data.aggregate(Sum('sales'))['sales__sum'] or 0
+        (bookmaker_totals['total_sales'] or 0) +
+        (online_gaming_totals['total_sales'] or 0) +
+        (lottery_totals['total_sales'] or 0) +
+        (physical_casino_totals['total_amount'] or 0)
     )
 
     total_payout = (
-        bookmaker_data.aggregate(Sum('payout'))['payout__sum'] or 0 +
-        online_gaming_data.aggregate(Sum('total_payout'))['total_payout__sum'] or 0 +
-        lottery_data.aggregate(Sum('payout'))['payout__sum'] or 0
+        (bookmaker_totals['total_payout'] or 0) +
+        (online_gaming_totals['total_payout'] or 0) +
+        (lottery_totals['total_payout'] or 0)
     )
 
     total_win_loss = (
-        bookmaker_data.aggregate(Sum('win_loss'))['win_loss__sum'] or 0 +
-        lottery_data.aggregate(Sum('win_loss'))['win_loss__sum'] or 0
+        (bookmaker_totals['total_win_loss'] or 0) +
+        (online_gaming_totals['total_ggr'] or 0) +
+        (lottery_totals['total_win_loss'] or 0) +
+        (physical_casino_totals['total_amount'] or 0)
     )
 
-    total_ggr = online_gaming_data.aggregate(Sum('ggr'))['ggr__sum'] or 0
-    total_amount_totals = physical_casino_data.aggregate(Sum('amount_totals'))['amount_totals__sum'] or 0
-
-    # Prepare data for charts
-    category_distribution = {
+    # Prepare submission type distribution
+    submission_distribution = {
         'Bookmaker': bookmaker_data.count(),
         'Online Gaming': online_gaming_data.count(),
         'Physical Casino': physical_casino_data.count(),
@@ -1278,64 +1464,67 @@ def admin_dashboard(request):
     for submission in bookmaker_data:
         all_submissions.append({
             'date': submission.date,
-            'category': 'Bookmaker',
+            'type': 'Bookmaker',
             'user': submission.user.username,
             'sales': submission.sales,
             'payout': submission.payout,
-            'win_loss': submission.win_loss
+            'win_loss': submission.win_loss,
+            'subcategory': submission.subcategory.name
         })
 
     for submission in online_gaming_data:
         all_submissions.append({
             'date': submission.date,
-            'category': 'Online Gaming',
+            'type': 'Online Gaming',
             'user': submission.user.username,
             'sales': submission.total_sales,
             'payout': submission.total_payout,
-            'win_loss': submission.ggr
+            'win_loss': submission.ggr,
+            'subcategory': submission.subcategory.name
         })
 
     for submission in physical_casino_data:
         all_submissions.append({
             'date': submission.date,
-            'category': 'Physical Casino',
+            'type': 'Physical Casino',
             'user': submission.user.username,
             'sales': submission.amount_totals,
             'payout': 0,
-            'win_loss': submission.amount_totals
+            'win_loss': submission.amount_totals,
+            'subcategory': submission.subcategory.name
         })
 
     for submission in lottery_data:
         all_submissions.append({
             'date': submission.date,
-            'category': 'Lottery',
+            'type': 'Lottery',
             'user': submission.user.username,
             'sales': submission.sales,
             'payout': submission.payout,
-            'win_loss': submission.win_loss
+            'win_loss': submission.win_loss,
+            'subcategory': submission.subcategory.name
         })
 
     # Sort submissions by date
     all_submissions.sort(key=lambda x: x['date'], reverse=True)
 
-    # Get other required data
-    website = Website.objects.all()
-    categories = BusinessCategory.objects.all()
-
-    # Prepare context
     context = {
         'total_sales': total_sales,
         'total_payout': total_payout,
         'total_win_loss': total_win_loss,
-        'total_ggr': total_ggr,
-        'total_amount_totals': total_amount_totals,
-        'category_distribution': category_distribution,
+        'submission_distribution': submission_distribution,
         'all_submissions': all_submissions,
-        'website': website,
-        'categories': categories,
+        'website': Website.objects.all(),
+        'submission_types': [
+            ('all', 'All Types'),
+            ('bookmaker', 'Bookmaker'),
+            ('online_gaming', 'Online Gaming'),
+            ('physical_casino', 'Physical Casino'),
+            ('lottery', 'Lottery')
+        ],
         'start_date': start_date.strftime("%Y-%m-%d") if start_date else "",
         'end_date': end_date.strftime("%Y-%m-%d") if end_date else "",
-        'selected_category': category,
+        'selected_type': submission_type,
         'username': request.user.username,
         'email': request.user.email
     }

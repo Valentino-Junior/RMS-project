@@ -406,27 +406,30 @@
             </div>
         </div>
 
-        <!-- User Activity Pie Chart Section -->
         <div class="col-sm-12 col-xl-6 profile-section">
             <div class="bg-secondary text-left rounded p-4" style="height: 500px;">
                 <h6 class="mb-4">User Activity</h6>
-                <canvas id="userActivityPieChart" style="width: 300px !important; height: 300px !important;"></canvas>
+                <div class="chart-container">
+                    <canvas id="userActivityPieChart"></canvas>
+                </div>
             </div>
         </div>
-
-        <!-- Login Frequency Chart Section -->
+        
         <div class="col-sm-12 col-xl-6 profile-section">
             <div class="bg-secondary text-left rounded p-4" style="height: 500px;">
                 <h6 class="mb-4">Login Frequency (Current Month)</h6>
-                <canvas id="loginFrequencyChart" style="width: 300px !important; height: 300px !important"></canvas>
+                <div class="chart-container">
+                    <canvas id="loginFrequencyChart"></canvas>
+                </div>
             </div>
         </div>
-
-        <!-- Notification Frequency Chart Section -->
+        
         <div class="col-sm-12 col-xl-6 profile-section">
             <div class="bg-secondary text-left rounded p-4" style="height: 500px;">
                 <h6 class="mb-4">Notification Frequency (Current Month)</h6>
-                <canvas id="notificationFrequencyChart" style="width: 300px !important; height: 300px !important;"></canvas>
+                <div class="chart-container">
+                    <canvas id="notificationFrequencyChart"></canvas>
+                </div>
             </div>
         </div>
 
@@ -502,16 +505,43 @@
             </div>
         </div>
 
+        <!-- Filter Section -->
+<div class="mb-4">
+    <form method="get" class="row g-3 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label">Submission Type</label>
+            <select name="submission_type" class="form-control">
+                <option value="">All Types</option>
+                <option value="bookmaker" {% if selected_type == 'bookmaker' %}selected{% endif %}>Bookmaker</option>
+                <option value="online_gaming" {% if selected_type == 'online_gaming' %}selected{% endif %}>Online Gaming</option>
+                <option value="physical_casino" {% if selected_type == 'physical_casino' %}selected{% endif %}>Physical Casino</option>
+                <option value="lottery" {% if selected_type == 'lottery' %}selected{% endif %}>Lottery</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Start Date</label>
+            <input type="date" name="start_date" class="form-control" value="{{ start_date }}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">End Date</label>
+            <input type="date" name="end_date" class="form-control" value="{{ end_date }}">
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary w-100">Apply Filter</button>
+        </div>
+    </form>
+</div>
+
         <!-- Submitted Data Table Card -->
         <div class="col-sm-12 col-xl-12 profile-section">
             <div class="bg-secondary text-left rounded p-4" style="border: 1px solid #eb1616; border-radius: 5px; height: 550px;">
                 <h6 class="mb-4">User Data Submissions</h6>
                 <div id="chat-container" class="table-responsive" style="margin: 0 auto; height: 65vh; overflow-y: auto; padding: 10px; border-radius: 10px;">
-                    <table id="user-questions-table" class="table table-striped table-dark">
+                    <table class="table table-hover table-striped table-dark">
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Category</th>
+                                <th>Type</th>
                                 <th>Subcategory</th>
                                 <th>Date</th>
                                 <th>Sales</th>
@@ -527,20 +557,20 @@
                             {% for submission in user_submissions %}
                                 <tr>
                                     <td>{{ forloop.counter }}</td>
-                                    <td>{{ submission.category }}</td>
+                                    <td>{{ submission.type }}</td>
                                     <td>{{ submission.subcategory }}</td>
-                                    <td>{{ submission.date }}</td>
-                                    <td>{{ submission.sales|default_if_none:"N/A" }}</td>
-                                    <td>{{ submission.payout|default_if_none:"N/A" }}</td>
-                                    <td>{{ submission.win_loss|default_if_none:"N/A" }}</td>
-                                    <td>{{ submission.total_sales|default_if_none:"N/A" }}</td>
-                                    <td>{{ submission.total_payout|default_if_none:"N/A" }}</td>
-                                    <td>{{ submission.ggr|default_if_none:"N/A" }}</td>
-                                    <td>{{ submission.amount_totals|default_if_none:"N/A" }}</td>
+                                    <td>{{ submission.date|date:"Y-m-d" }}</td>
+                                    <td>{% if submission.sales %}${{ submission.sales|floatformat:2 }}{% else %}N/A{% endif %}</td>
+                                    <td>{% if submission.payout %}${{ submission.payout|floatformat:2 }}{% else %}N/A{% endif %}</td>
+                                    <td>{% if submission.win_loss %}${{ submission.win_loss|floatformat:2 }}{% else %}N/A{% endif %}</td>
+                                    <td>{% if submission.total_sales %}${{ submission.total_sales|floatformat:2 }}{% else %}N/A{% endif %}</td>
+                                    <td>{% if submission.total_payout %}${{ submission.total_payout|floatformat:2 }}{% else %}N/A{% endif %}</td>
+                                    <td>{% if submission.ggr %}${{ submission.ggr|floatformat:2 }}{% else %}N/A{% endif %}</td>
+                                    <td>{% if submission.amount_totals %}${{ submission.amount_totals|floatformat:2 }}{% else %}N/A{% endif %}</td>
                                 </tr>
                             {% empty %}
                                 <tr>
-                                    <td colspan="11">No submissions yet.</td>
+                                    <td colspan="11" class="text-center">No submissions yet.</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -558,98 +588,130 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    // Login Frequency Chart
-    const loginFrequencyLabels = JSON.parse('{{ login_frequency_labels|escapejs }}') || [];
-    const loginFrequencyData = JSON.parse('{{ login_frequency_data|escapejs }}') || [];
-
-    const loginFrequencyChart = new Chart(document.getElementById('loginFrequencyChart').getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: loginFrequencyLabels,
-            datasets: [{
-                label: 'Logins Per Day',
-                data: loginFrequencyData,
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',  // Light blue
-                borderColor: 'rgba(54, 162, 235, 1)',      // Dark blue
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'top' },
-                tooltip: {
-                    callbacks: {
-                        label: function(tooltipItem) {
-                            return tooltipItem.label + ': ' + tooltipItem.raw + ' logins';
-                        }
-                    }
-                }
-            }
-        }
-    });
-
-    // Notification Frequency Chart
-    const notificationFrequencyLabels = JSON.parse('{{ notification_frequency_labels|escapejs }}') || [];
-    const notificationFrequencyData = JSON.parse('{{ notification_frequency_data|escapejs }}') || [];
-
-    const notificationFrequencyChart = new Chart(document.getElementById('notificationFrequencyChart').getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: notificationFrequencyLabels,
-            datasets: [{
-                label: 'Notifications Per Day',
-                data: notificationFrequencyData,
-                backgroundColor: 'rgba(255, 159, 64, 0.2)',  // Light orange
-                borderColor: 'rgba(255, 159, 64, 1)',      // Dark orange
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'top' },
-                tooltip: {
-                    callbacks: {
-                        label: function(tooltipItem) {
-                            return tooltipItem.label + ': ' + tooltipItem.raw + ' notifications';
-                        }
-                    }
-                }
-            }
-        }
-    });
-
-    // User Activity Pie Chart
-    const userActivityData = {
-        labels: ['Account Updates'],
-        datasets: [{
-            data: [{{ account_updates }} || 0],  // Ensure no empty or invalid data
-            backgroundColor: ['rgba(75, 192, 192, 0.2)'], // Light teal
-            borderColor: ['rgba(75, 192, 192, 1)'],     // Dark teal
-            borderWidth: 1
-        }]
-    };
-
-    const userActivityPieChart = new Chart(document.getElementById('userActivityPieChart').getContext('2d'), {
-        type: 'pie',
-        data: userActivityData,
-        options: {
-            responsive: true,
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: function(tooltipItem) {
-                            return tooltipItem.label + ': ' + tooltipItem.raw + ' update(s)';
-                        }
-                    }
+    // Wait for DOM to be ready
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Charts with better error handling
+        try {
+            // Login Frequency Chart
+            const loginFrequencyLabels = JSON.parse('{{ login_frequency_labels|escapejs }}') || [];
+            const loginFrequencyData = JSON.parse('{{ login_frequency_data|escapejs }}') || [];
+    
+            new Chart(document.getElementById('loginFrequencyChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: loginFrequencyLabels,
+                    datasets: [{
+                        label: 'Logins Per Day',
+                        data: loginFrequencyData,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
                 },
-                legend: { position: 'top' }
-            }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.label + ': ' + tooltipItem.raw + ' logins';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+    
+            // Notification Frequency Chart
+            const notificationFrequencyLabels = JSON.parse('{{ notification_frequency_labels|escapejs }}') || [];
+            const notificationFrequencyData = JSON.parse('{{ notification_frequency_data|escapejs }}') || [];
+    
+            new Chart(document.getElementById('notificationFrequencyChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: notificationFrequencyLabels,
+                    datasets: [{
+                        label: 'Notifications Per Day',
+                        data: notificationFrequencyData,
+                        backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.label + ': ' + tooltipItem.raw + ' notifications';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+    
+            // User Activity Pie Chart
+            const accountUpdates = {{ account_updates|default:0 }};
+            
+            new Chart(document.getElementById('userActivityPieChart').getContext('2d'), {
+                type: 'pie',
+                data: {
+                    labels: ['Account Updates', 'Other Activities'],
+                    datasets: [{
+                        data: [accountUpdates, accountUpdates > 0 ? accountUpdates/2 : 1],
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(54, 162, 235, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(54, 162, 235, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.label + ': ' + tooltipItem.raw + ' update(s)';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Error initializing charts:', error);
         }
     });
-</script>
-
+    </script>
 
 
 

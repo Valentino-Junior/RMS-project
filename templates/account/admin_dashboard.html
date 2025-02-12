@@ -244,12 +244,11 @@
                 <input type="date" name="end_date" class="form-control" value="{{ end_date }}">
             </div>
             <div class="col-md-4">
-                <label class="form-label">Category</label>
-                <select name="category" class="form-control">
-                    <option value="">All Categories</option>
-                    {% for category in categories %}
-                        <option value="{{ category.id }}" {% if selected_category == category.id %}selected{% endif %}>
-                            {{ category.name }}
+                <label class="form-label">Submission Type</label>
+                <select name="submission_type" class="form-control">
+                    {% for value, label in submission_types %}
+                        <option value="{{ value }}" {% if selected_type == value %}selected{% endif %}>
+                            {{ label }}
                         </option>
                     {% endfor %}
                 </select>
@@ -335,7 +334,7 @@
                     <tr>
                         <th scope="col">Date</th>
                         <th scope="col">User</th>
-                        <th scope="col">Category</th>
+                        <th scope="col">Submission Type</th>
                         <th scope="col">Sales</th>
                         <th scope="col">Payout</th>
                         <th scope="col">Win/Loss</th>
@@ -346,7 +345,7 @@
                     <tr>
                         <td>{{ submission.date|date:"Y-m-d" }}</td>
                         <td>{{ submission.user }}</td>
-                        <td>{{ submission.category }}</td>
+                        <td>{{ submission.type }}</td>
                         <td>${{ submission.sales|floatformat:2 }}</td>
                         <td>${{ submission.payout|floatformat:2 }}</td>
                         <td>${{ submission.win_loss|floatformat:2 }}</td>
