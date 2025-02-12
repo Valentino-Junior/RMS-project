@@ -1452,11 +1452,11 @@ def admin_dashboard(request):
 
    # Prepare submission type distribution
    submission_distribution = {
-       'Bookmaker': bookmaker_data.count(),
-       'Online Gaming': online_gaming_data.count(),
-       'Physical Casino': physical_casino_data.count(),
-       'Lottery': lottery_data.count()
-   }
+    'Bookmaker': bookmaker_data.count(),
+    'Online_Gaming': online_gaming_data.count(),
+    'Physical_Casino': physical_casino_data.count(),
+    'Lottery': lottery_data.count()
+}
 
    # Combine all submissions for the table view
    all_submissions = []
