@@ -324,7 +324,7 @@
             </div>
         </div>
         <div class="col-sm-12 col-xl-6">
-            <div class="bg-secondary rounded p-4 chart-container" style="height: 400px;">
+            <div class="bg-secondary rounded p-4 chart-container" style="height: 310px;">
                 <h6 class="mb-4">Category Distribution</h6>
                 <canvas id="categoryPieChart"></canvas>
             </div>
@@ -432,7 +432,7 @@
                 data: [
                     {{ submission_distribution.Bookmaker }},
                     {{ submission_distribution.Online_Gaming }},
-                    {{ submission_distribution.Physical_Casino}},
+                    {{ submission_distribution.Physical_Casino }}, 
                     {{ submission_distribution.Lottery }}
                 ],
                 backgroundColor: [
@@ -456,8 +456,14 @@
                 legend: {
                     position: 'top',
                     labels: {
-                        color: '#fff'
-                    }
+                        color: '#fff',
+                        boxWidth: 20,
+                        padding: 5,
+                        font: {
+                            size: 11
+                        }
+                    },
+                    position: 'right'
                 }
             }
         }
