@@ -36,6 +36,8 @@ urlpatterns = [
     path('account/password_reset/done/', CustomPasswordResetDoneView.as_view(), name='password_reset_done'),
     path('account/reset/<uidb64>/<token>/', CustomPasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('account/reset/done/', CustomPasswordResetCompleteView.as_view(), name='password_reset_complete'),
+
+    path('get-subcategories/', views.get_subcategories, name='get_subcategories'),
 ]
 
 if settings.DEBUG:

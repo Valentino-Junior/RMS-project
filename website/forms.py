@@ -88,156 +88,219 @@ class CustomPasswordChangeForm(PasswordChangeForm):
 class PhysicalCasinoForm(forms.Form):
     category = forms.ModelChoiceField(
         queryset=BusinessCategory.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        required=True
+        widget=forms.Select(attrs={
+            'class': 'form-control',
+            'id': 'physical-casino-category',
+            'required': True
+        }),
+        empty_label="Select Category"
     )
     subcategory = forms.ModelChoiceField(
-        queryset=BusinessSubCategory.objects.filter(category__name='Physical Casino'),
-        required=True,
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-    amount_totals = forms.DecimalField(
-        max_digits=10, decimal_places=2,
-        widget=forms.NumberInput(attrs={'class': 'form-control'}),
-        required=True
+        queryset=BusinessSubCategory.objects.all(),
+        widget=forms.Select(attrs={
+            'class': 'form-control',
+            'id': 'physical-casino-subcategory',
+            'required': True
+        }),
+        empty_label="Select Subcategory"
     )
     date = forms.DateField(
-        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-        required=False
-    )  # Ensure the date field exists and is optional
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Check if no subcategories are available for the category 'Physical Casino'
-        if not self.fields['subcategory'].queryset.exists():
-            self.fields['subcategory'].queryset = BusinessSubCategory.objects.none()
-            self.fields['subcategory'].choices = [('', 'N/A')]  # Default "N/A"
-
-    def clean_subcategory(self):
-        subcategory = self.cleaned_data.get('subcategory')
-        if subcategory == '':
-            return None  # Or another identifier for "N/A"
-        return subcategory
-
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date',
+            'required': True
+        })
+    )
+    amount_totals = forms.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'required': True
+        })
+    )
 class BookmakerForm(forms.Form):
     category = forms.ModelChoiceField(
         queryset=BusinessCategory.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        required=True
+        widget=forms.Select(attrs={
+            'class': 'form-control',
+            'id': 'bookmaker-category',
+            'required': True
+        }),
+        empty_label="Select Category"
     )
     subcategory = forms.ModelChoiceField(
-        queryset=BusinessSubCategory.objects.filter(category__name='Bookmaker'),
-        required=True,
-        widget=forms.Select(attrs={'class': 'form-control'})
+        queryset=BusinessSubCategory.objects.all(),
+        widget=forms.Select(attrs={
+            'class': 'form-control',
+            'id': 'bookmaker-subcategory',
+            'required': True
+        }),
+        empty_label="Select Subcategory"
     )
-    date = forms.DateField(widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}))
-    sales = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control'}))
-    payout = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control'}))
-    win_loss = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'}), required=False)
+    date = forms.DateField(
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date',
+            'required': True
+        })
+    )
+    sales = forms.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'required': True
+        })
+    )
+    payout = forms.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'required': True
+        })
+    )
+    win_loss = forms.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'readonly': True
+        }),
+        required=False
+    )
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if not self.fields['subcategory'].queryset.exists():
-            self.fields['subcategory'].queryset = BusinessSubCategory.objects.none()
-            self.fields['subcategory'].choices = [('', 'N/A')]  # Default "N/A"
-
-    def clean_subcategory(self):
-        subcategory = self.cleaned_data.get('subcategory')
-        if subcategory == '':
-            return None  # Or another identifier for "N/A"
-        return subcategory
-
-    def clean_win_loss(self):
-        sales = self.cleaned_data.get('sales', 0)
-        payout = self.cleaned_data.get('payout', 0)
-        return sales - payout  # Automatically calculates win_loss
+    def clean(self):
+        cleaned_data = super().clean()
+        sales = cleaned_data.get('sales')
+        payout = cleaned_data.get('payout')
+        
+        if sales and payout:
+            cleaned_data['win_loss'] = sales - payout
+            
+        return cleaned_data
 
 class OnlineGamingForm(forms.Form):
     category = forms.ModelChoiceField(
         queryset=BusinessCategory.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        required=True
+        widget=forms.Select(attrs={
+            'class': 'form-control',
+            'id': 'online-gaming-category',
+            'required': True
+        }),
+        empty_label="Select Category"
     )
     subcategory = forms.ModelChoiceField(
-        queryset=BusinessSubCategory.objects.filter(category__name='Online Gaming'),
-        required=True,
-        widget=forms.Select(attrs={'class': 'form-control'})
+        queryset=BusinessSubCategory.objects.all(),
+        widget=forms.Select(attrs={
+            'class': 'form-control',
+            'id': 'online-gaming-subcategory',
+            'required': True
+        }),
+        empty_label="Select Subcategory"
     )
-    date = forms.DateField(widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}))
-    total_sales = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control'}))
-    total_payout = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control'}))
-    ggr = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'}), required=False)
+    date = forms.DateField(
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date',
+            'required': True
+        })
+    )
+    total_sales = forms.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'required': True
+        })
+    )
+    total_payout = forms.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'required': True
+        })
+    )
+    ggr = forms.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'readonly': True
+        }),
+        required=False
+    )
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if not self.fields['subcategory'].queryset.exists():
-            self.fields['subcategory'].queryset = BusinessSubCategory.objects.none()
-            self.fields['subcategory'].choices = [('', 'N/A')]  # Default "N/A"
-
-    def clean_subcategory(self):
-        subcategory = self.cleaned_data.get('subcategory')
-        if subcategory == '':
-            return None  # Or another identifier for "N/A"
-        return subcategory
-
-    def clean_ggr(self):
-        total_sales = self.cleaned_data.get('total_sales', 0)
-        total_payout = self.cleaned_data.get('total_payout', 0)
-        return total_sales - total_payout  # Automatically calculates GGR
-
+    def clean(self):
+        cleaned_data = super().clean()
+        total_sales = cleaned_data.get('total_sales')
+        total_payout = cleaned_data.get('total_payout')
+        
+        if total_sales and total_payout:
+            cleaned_data['ggr'] = total_sales - total_payout
+            
+        return cleaned_data
+    
 class LotteryForm(forms.Form):
     category = forms.ModelChoiceField(
         queryset=BusinessCategory.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        required=True
+        widget=forms.Select(attrs={
+            'class': 'form-control',
+            'id': 'lottery-category',
+            'required': True
+        }),
+        empty_label="Select Category"
     )
     subcategory = forms.ModelChoiceField(
-        queryset=BusinessSubCategory.objects.filter(category__name='Lottery'),
-        required=True,
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-    sales = forms.DecimalField(
-        max_digits=10, decimal_places=2,
-        widget=forms.NumberInput(attrs={'class': 'form-control'}),
-        required=True
-    )
-    payout = forms.DecimalField(
-        max_digits=10, decimal_places=2,
-        widget=forms.NumberInput(attrs={'class': 'form-control'}),
-        required=True
-    )
-    win_loss = forms.DecimalField(
-        max_digits=10, decimal_places=2,
-        widget=forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
-        required=False
+        queryset=BusinessSubCategory.objects.all(),
+        widget=forms.Select(attrs={
+            'class': 'form-control',
+            'id': 'lottery-subcategory',
+            'required': True
+        }),
+        empty_label="Select Subcategory"
     )
     date = forms.DateField(
-        widget=DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date',
+            'required': True
+        })
+    )
+    sales = forms.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'required': True
+        })
+    )
+    payout = forms.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'required': True
+        })
+    )
+    win_loss = forms.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'readonly': True
+        }),
         required=False
-    )  # Optional date field, default to today's date if not provided
+    )
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Handle the case where there are no subcategories available
-        if not self.fields['subcategory'].queryset.exists():
-            self.fields['subcategory'].queryset = BusinessSubCategory.objects.none()
-            self.fields['subcategory'].choices = [('', 'N/A')]  # Default "N/A"
-
-    def clean_subcategory(self):
-        subcategory = self.cleaned_data.get('subcategory')
-        if subcategory == '':
-            return None  # Or another identifier for "N/A"
-        return subcategory
-
-    def clean_win_loss(self):
-        # Calculate win_loss as sales - payout if not provided
-        sales = self.cleaned_data.get('sales', 0)
-        payout = self.cleaned_data.get('payout', 0)
-        return sales - payout  # Automatically calculates win_loss
-
-    def clean_date(self):
-        date = self.cleaned_data.get('date')
-        if not date:
-            # If no date is provided, set to today's date
-            return datetime.now().date()
-        return date
+    def clean(self):
+        cleaned_data = super().clean()
+        sales = cleaned_data.get('sales')
+        payout = cleaned_data.get('payout')
+        
+        if sales and payout:
+            cleaned_data['win_loss'] = sales - payout
+            
+        return cleaned_data

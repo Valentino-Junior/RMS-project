@@ -430,53 +430,58 @@
             </div>
         </div>
 
-        <!-- Bookmaker Form Card -->
-        <div class="col-sm-12 col-xl-6 profile-section">
-            <div class="bg-secondary text-left rounded p-4" style="height: 650px">
-                <h6 class="mb-4">Bookmaker Form</h6>
-                <form method="post">
-                    {% csrf_token %}
-                    {{ bookmaker_form.as_p }}
-                    <button type="submit" class="btn btn-primary">Submit Bookmaker Form</button>
-                </form>
-            </div>
-        </div>
+        <!-- Bookmaker Form -->
+<div class="col-sm-12 col-xl-6 profile-section">
+    <div class="bg-secondary text-left rounded p-4" style="height: 650px">
+        <h6 class="mb-4">Bookmaker Form</h6>
+        <form id="bookmaker-form" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="bookmaker">
+            {{ bookmaker_form.as_p }}
+            <button type="submit" class="btn btn-primary">Submit Bookmaker Form</button>
+        </form>
+    </div>
+</div>
 
-        <!-- Online Gaming Form Card -->
-        <div class="col-sm-12 col-xl-6 profile-section">
-            <div class="bg-secondary text-left rounded p-4" style="height: 650px">
-                <h6 class="mb-4">Online Gaming Form</h6>
-                <form method="post">
-                    {% csrf_token %}
-                    {{ online_gaming_form.as_p }}
-                    <button type="submit" class="btn btn-primary">Submit Online Gaming Form</button>
-                </form>
-            </div>
-        </div>
+        <!-- Online Gaming Form -->
+<div class="col-sm-12 col-xl-6 profile-section">
+    <div class="bg-secondary text-left rounded p-4" style="height: 650px">
+        <h6 class="mb-4">Online Gaming Form</h6>
+        <form id="online-gaming-form" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="online_gaming">
+            {{ online_gaming_form.as_p }}
+            <button type="submit" class="btn btn-primary">Submit Online Gaming Form</button>
+        </form>
+    </div>
+</div>
 
-        <!-- Physical Casino Form Card -->
-        <div class="col-sm-12 col-xl-6 profile-section">
-            <div class="bg-secondary text-left rounded p-4" style="height: 650px">
-                <h6 class="mb-4">Physical Casino Form</h6>
-                <form method="post">
-                    {% csrf_token %}
-                    {{ physical_casino_form.as_p }}
-                    <button type="submit" class="btn btn-primary">Submit Physical Casino Form</button>
-                </form>
-            </div>
-        </div>
 
-        <!-- Lottery Form Card -->
-        <div class="col-sm-12 col-xl-6 profile-section">
-            <div class="bg-secondary text-left rounded p-4" style="height: 650px;">
-                <h6 class="mb-4">Lottery Form</h6>
-                <form method="post">
-                    {% csrf_token %}
-                    {{ lottery_form.as_p }}
-                    <button type="submit" class="btn btn-primary">Submit Lottery Form</button>
-                </form>
-            </div>
-        </div>
+        <!-- Physical Casino Form -->
+<div class="col-sm-12 col-xl-6 profile-section">
+    <div class="bg-secondary text-left rounded p-4" style="height: 650px">
+        <h6 class="mb-4">Physical Casino Form</h6>
+        <form id="physical-casino-form" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="physical_casino">
+            {{ physical_casino_form.as_p }}
+            <button type="submit" class="btn btn-primary">Submit Physical Casino Form</button>
+        </form>
+    </div>
+</div>
+
+<!-- Lottery Form -->
+<div class="col-sm-12 col-xl-6 profile-section">
+    <div class="bg-secondary text-left rounded p-4" style="height: 650px">
+        <h6 class="mb-4">Lottery Form</h6>
+        <form id="lottery-form" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="lottery">
+            {{ lottery_form.as_p }}
+            <button type="submit" class="btn btn-primary">Submit Lottery Form</button>
+        </form>
+    </div>
+</div>
 
         <!-- Generate PDF Report Section with Date Pickers -->
         <div class="col-sm-12 col-xl-6 profile-section">
@@ -649,6 +654,179 @@
 
 
     <br>
+
+
+    <script>
+        // Function to update subcategories based on selected category
+        function updateSubcategories(formId) {
+            const form = document.getElementById(formId);
+            if (!form) return;
+        
+            const categorySelect = form.querySelector('[name="category"]');
+            const subcategorySelect = form.querySelector('[name="subcategory"]');
+            
+            if (!categorySelect || !subcategorySelect) return;
+        
+            categorySelect.addEventListener('change', function() {
+                const categoryId = this.value;
+                if (!categoryId) {
+                    subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
+                    return;
+                }
+        
+                // Show loading state
+                subcategorySelect.innerHTML = '<option value="">Loading...</option>';
+        
+                // Fetch subcategories from server
+                fetch(`/get-subcategories/?category_id=${categoryId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
+                        data.forEach(subcategory => {
+                            const option = document.createElement('option');
+                            option.value = subcategory.id;
+                            option.textContent = subcategory.name;
+                            subcategorySelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        subcategorySelect.innerHTML = '<option value="">Error loading subcategories</option>';
+                    });
+            });
+        }
+        
+        // Function to calculate win/loss or GGR
+        function setupCalculations(formId) {
+            const form = document.getElementById(formId);
+            if (!form) return;
+        
+            const salesInput = form.querySelector('[name="sales"], [name="total_sales"]');
+            const payoutInput = form.querySelector('[name="payout"], [name="total_payout"]');
+            const resultInput = form.querySelector('[name="win_loss"], [name="ggr"]');
+        
+            if (salesInput && payoutInput && resultInput) {
+                const calculate = () => {
+                    const sales = parseFloat(salesInput.value) || 0;
+                    const payout = parseFloat(payoutInput.value) || 0;
+                    resultInput.value = (sales - payout).toFixed(2);
+                };
+        
+                salesInput.addEventListener('input', calculate);
+                payoutInput.addEventListener('input', calculate);
+            }
+        }
+        
+        // Initialize form functionality when document is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize each form
+            const forms = [
+                'bookmaker-form',
+                'online-gaming-form',
+                'physical-casino-form',
+                'lottery-form'
+            ];
+        
+            forms.forEach(formId => {
+                updateSubcategories(formId);
+                setupCalculations(formId);
+            });
+        
+            // Add form submission handling
+            forms.forEach(formId => {
+                const form = document.getElementById(formId);
+                if (form) {
+                    form.addEventListener('submit', function(e) {
+                        const category = form.querySelector('[name="category"]').value;
+                        const subcategory = form.querySelector('[name="subcategory"]').value;
+        
+                        if (!category || !subcategory) {
+                            e.preventDefault();
+                            alert('Please select both category and subcategory');
+                            return false;
+                        }
+                    });
+                }
+            });
+        });
+        
+        // Success message handling
+        {% if messages %}
+            {% for message in messages %}
+                if (message.tags === 'success') {
+                    alert('{{ message }}');
+                }
+            {% endfor %}
+        {% endif %}
+    </script>
+
+<style>
+    /* Form styling */
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    .form-control {
+        background-color: #2A2E32 !important;
+        border: 1px solid #454D55 !important;
+        color: #fff !important;
+    }
+    
+    .form-control:focus {
+        background-color: #2A2E32 !important;
+        border-color: #eb1616 !important;
+        box-shadow: 0 0 0 0.2rem rgba(235, 22, 22, 0.25) !important;
+    }
+    
+    .form-control::placeholder {
+        color: #6c757d !important;
+    }
+    
+    .form-control:disabled,
+    .form-control[readonly] {
+        background-color: #1a1d20 !important;
+    }
+    
+    /* Button styling */
+    .btn-primary {
+        background-color: #eb1616 !important;
+        border-color: #eb1616 !important;
+    }
+    
+    .btn-primary:hover {
+        background-color: #c91212 !important;
+        border-color: #c91212 !important;
+    }
+    
+    /* Error message styling */
+    .errorlist {
+        color: #eb1616;
+        list-style: none;
+        padding-left: 0;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    /* Form label styling */
+    label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #fff;
+    }
+    
+    /* Select dropdown styling */
+    select.form-control {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 1em;
+    }
+    </style>
+        
+
     <script>
     $(document).ready(function() {
         $('#user-questions-table').DataTable({
