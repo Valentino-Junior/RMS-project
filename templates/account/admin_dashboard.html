@@ -184,23 +184,26 @@
                 </a>
                 <div class="d-flex align-items-center ms-4 mb-4">
                     <div class="position-relative">
-                        {% if profile_picture %}
-                            <img class="rounded-circle" src="{{ profile_picture.image.url }}" alt="" style="width: 40px; height: 40px;">
-                        {% else %}
-                            <img class="rounded-circle" src="{% static 'img/user.png' %}" alt="" style="width: 40px; height: 40px;">
-                        {% endif %}
+                        <img class="rounded-circle" src="{{website.0.image.url}}" alt="" style="width: 40px; height: 40px;">
                         <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
                     </div>
                     <div class="ms-3">
-                        <h6 class="mb-0">{{ username }}</h6>
-                        <span>Admin</span>
+                        <h6 class="mb-0">I Love Tech</h6>
+                        <span>Tech-User</span>
                     </div>
                 </div>
                 <div class="navbar-nav w-100">
                     <a href="{% url 'index' %}" class="nav-item nav-link"><i class="fa fa-home me-2"></i>Home</a>
-                    <a href="{% url 'dashboard' %}" class="nav-item nav-link"><i class="fa fa-leaf me-2"></i>Dashboard</a>
-                    <a href="{% url 'admin_dashboard' %}" class="nav-item nav-link active"><i class="fa fa-chart-line me-2"></i>Analytics</a>
-                    <a href="{% url 'index' %}#form03-1r" class="nav-item nav-link"><i class="fa fa-envelope me-2"></i>Contact</a>
+                    <a href="{% url 'dashboard' %}" class="nav-item nav-link active"><i class="fa fa-leaf me-2"></i>Dashboard</a>
+                    {% if request.user.is_superuser %}
+                    <a href="{% url 'send_email' %}" class="nav-item nav-link"><i class="fa fa-paper-plane me-2"></i>Mailer</a>
+                    {% endif %}
+                    <!-- Admin Link (Visible only for admin users) -->
+                    {% if request.user.is_staff %}
+                    <a href="{% url 'admin_dashboard' %}" class="nav-item nav-link"><i class="fa fa-cogs me-2"></i>Analysis</a>
+                    {% endif %}
+                    <a href="{% url 'index' %}#form03-1r" class="nav-item nav-link"><i class="fa fa-info me-2"></i>Help</a>
+                    <a href="{% url 'index' %}#form03-1r" class="nav-item nav-link"><i class="fa fa-envelope-open me-2"></i>Contact Us</a>
                 </div>
             </nav>
         </div>
@@ -210,7 +213,10 @@
         <div class="content">
             <!-- Navbar Start -->
             <nav class="navbar navbar-expand bg-secondary navbar-dark sticky-top px-4 py-0">
-                <a href="#" class="sidebar-toggler flex-shrink-0">
+                <a href="{% url 'dashboard' %}" class="navbar-brand d-flex d-lg-none me-4">
+                    <h2 class="text-primary mb-0"><i class="fa fa-user-edit"></i></h2>
+                </a>
+                <a href="#" class="sidebar-toggler flex-shrink-0"  id="sidebarToggle">
                     <i class="fa fa-bars"></i>
                 </a>
                 <div class="navbar-nav align-items-center ms-auto">
@@ -219,16 +225,60 @@
                             <i class="fa fa-envelope me-lg-2"></i>
                             <span class="d-none d-lg-inline-flex">{{ email }}</span>
                         </a>
+
                         <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
-                            <a href="{% url 'profile' %}" class="dropdown-item">Profile</a>
-                            <a href="{% url 'signout' %}" class="dropdown-item">Logout</a>
-                        </div>
+                           <a href="{% url 'profile' %}" class="dropdown-item">
+                            View Profile
+                           </a>
+                       </div>
+                    </div>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                           <i class="fa fa-bell me-lg-2"></i>
+                           <span class="d-none d-lg-inline-flex">Notifications</span>
+                        </a>
+
+
+                        <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
+                           <a href="{% url 'notification' %}" class="dropdown-item">
+                            You have
+                            {% if unread_notifications_count > 0 %}
+                           <span>{{ unread_notifications_count }}</span>
+                            {% else %}
+                           <span>0</span>
+                            {% endif %} notifications.
+                           </a>
+                       </div>
+                    </div>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                        {% if profile_picture and profile_picture.image %}
+                        <img class="rounded-circle me-lg-2" src="{{ profile_picture.image.url }}" alt="{{ request.user.username }}'s Profile Picture" style="width: 40px; height: 40px; object-fit: cover; background: #eb1616 !important;">
+                        {% else %}
+                        <img class="rounded-circle me-lg-2" src="{% static 'img/user.png' %}" alt="Default Profile Picture" style="width: 40px; height: 40px; object-fit: cover;">
+                        {% endif %}
+
+                            <span class="d-none d-lg-inline-flex">{{ username }}</span>
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
+                           <!-- Conditionally display the admin link if the user is an admin -->
+                            {% if user.is_superuser %}
+                               <a href="{% url 'admin:index' %}" class="dropdown-item">Admin Log In</a>
+                            {% endif %}
+                           <a href="{% url 'profile' %}" class="dropdown-item">
+                            Account
+                           </a>
+                           <a href="{% url 'profile' %}" class="dropdown-item">Password</a>
+                           <a href="{% url 'signout' %}" class="dropdown-item">Log Out</a>
+
+                       </div>
                     </div>
                 </div>
             </nav>
             <!-- Navbar End -->
 
-            <!-- Your existing content here -->
+            
             {% block content %}
 <!-- Filter Section -->
 <div class="container-fluid pt-4 px-4 fade-in">
