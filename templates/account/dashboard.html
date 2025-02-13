@@ -434,57 +434,57 @@
         </div>
 
         <!-- Bookmaker Form -->
-<div class="col-sm-12 col-xl-6 profile-section">
-    <div class="bg-secondary text-left rounded p-4" style="height: 650px">
-        <h6 class="mb-4">Bookmaker Form</h6>
-        <form id="bookmaker-form" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="form_type" value="bookmaker">
-            {{ bookmaker_form.as_p }}
-            <button type="submit" class="btn btn-primary">Submit Bookmaker Form</button>
-        </form>
-    </div>
-</div>
+        <div class="col-sm-12 col-xl-6 profile-section">
+            <div class="bg-secondary text-left rounded p-4" style="height: 650px">
+                <h6 class="mb-4">Bookmaker Form</h6>
+                <form id="bookmaker-form" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="bookmaker">
+                    {{ bookmaker_form.as_p }}
+                    <button type="submit" class="btn btn-primary">Submit Bookmaker Form</button>
+                </form>
+            </div>
+        </div>
 
-        <!-- Online Gaming Form -->
-<div class="col-sm-12 col-xl-6 profile-section">
-    <div class="bg-secondary text-left rounded p-4" style="height: 650px">
-        <h6 class="mb-4">Online Gaming Form</h6>
-        <form id="online-gaming-form" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="form_type" value="online_gaming">
-            {{ online_gaming_form.as_p }}
-            <button type="submit" class="btn btn-primary">Submit Online Gaming Form</button>
-        </form>
-    </div>
-</div>
+                <!-- Online Gaming Form -->
+        <div class="col-sm-12 col-xl-6 profile-section">
+            <div class="bg-secondary text-left rounded p-4" style="height: 650px">
+                <h6 class="mb-4">Online Gaming Form</h6>
+                <form id="online-gaming-form" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="online_gaming">
+                    {{ online_gaming_form.as_p }}
+                    <button type="submit" class="btn btn-primary">Submit Online Gaming Form</button>
+                </form>
+            </div>
+        </div>
 
 
-        <!-- Physical Casino Form -->
-<div class="col-sm-12 col-xl-6 profile-section">
-    <div class="bg-secondary text-left rounded p-4" style="height: 650px">
-        <h6 class="mb-4">Physical Casino Form</h6>
-        <form id="physical-casino-form" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="form_type" value="physical_casino">
-            {{ physical_casino_form.as_p }}
-            <button type="submit" class="btn btn-primary">Submit Physical Casino Form</button>
-        </form>
-    </div>
-</div>
+                <!-- Physical Casino Form -->
+        <div class="col-sm-12 col-xl-6 profile-section">
+            <div class="bg-secondary text-left rounded p-4" style="height: 650px">
+                <h6 class="mb-4">Physical Casino Form</h6>
+                <form id="physical-casino-form" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="physical_casino">
+                    {{ physical_casino_form.as_p }}
+                    <button type="submit" class="btn btn-primary">Submit Physical Casino Form</button>
+                </form>
+            </div>
+        </div>
 
-<!-- Lottery Form -->
-<div class="col-sm-12 col-xl-6 profile-section">
-    <div class="bg-secondary text-left rounded p-4" style="height: 650px">
-        <h6 class="mb-4">Lottery Form</h6>
-        <form id="lottery-form" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="form_type" value="lottery">
-            {{ lottery_form.as_p }}
-            <button type="submit" class="btn btn-primary">Submit Lottery Form</button>
-        </form>
-    </div>
-</div>
+        <!-- Lottery Form -->
+        <div class="col-sm-12 col-xl-6 profile-section">
+            <div class="bg-secondary text-left rounded p-4" style="height: 650px">
+                <h6 class="mb-4">Lottery Form</h6>
+                <form id="lottery-form" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="lottery">
+                    {{ lottery_form.as_p }}
+                    <button type="submit" class="btn btn-primary">Submit Lottery Form</button>
+                </form>
+            </div>
+        </div>
 
         <!-- Generate PDF Report Section with Date Pickers -->
         <div class="col-sm-12 col-xl-6 profile-section">
@@ -506,31 +506,31 @@
         </div>
 
         <!-- Filter Section -->
-<div class="mb-4">
-    <form method="get" class="row g-3 align-items-end">
-        <div class="col-md-3">
-            <label class="form-label">Submission Type</label>
-            <select name="submission_type" class="form-control">
-                <option value="">All Types</option>
-                <option value="bookmaker" {% if selected_type == 'bookmaker' %}selected{% endif %}>Bookmaker</option>
-                <option value="online_gaming" {% if selected_type == 'online_gaming' %}selected{% endif %}>Online Gaming</option>
-                <option value="physical_casino" {% if selected_type == 'physical_casino' %}selected{% endif %}>Physical Casino</option>
-                <option value="lottery" {% if selected_type == 'lottery' %}selected{% endif %}>Lottery</option>
-            </select>
+        <div class="mb-4">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Submission Type</label>
+                    <select name="submission_type" class="form-control">
+                        <option value="">All Types</option>
+                        <option value="bookmaker" {% if selected_type == 'bookmaker' %}selected{% endif %}>Bookmaker</option>
+                        <option value="online_gaming" {% if selected_type == 'online_gaming' %}selected{% endif %}>Online Gaming</option>
+                        <option value="physical_casino" {% if selected_type == 'physical_casino' %}selected{% endif %}>Physical Casino</option>
+                        <option value="lottery" {% if selected_type == 'lottery' %}selected{% endif %}>Lottery</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Start Date</label>
+                    <input type="date" name="start_date" class="form-control" value="{{ start_date }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">End Date</label>
+                    <input type="date" name="end_date" class="form-control" value="{{ end_date }}">
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">Apply Filter</button>
+                </div>
+            </form>
         </div>
-        <div class="col-md-3">
-            <label class="form-label">Start Date</label>
-            <input type="date" name="start_date" class="form-control" value="{{ start_date }}">
-        </div>
-        <div class="col-md-3">
-            <label class="form-label">End Date</label>
-            <input type="date" name="end_date" class="form-control" value="{{ end_date }}">
-        </div>
-        <div class="col-md-3">
-            <button type="submit" class="btn btn-primary w-100">Apply Filter</button>
-        </div>
-    </form>
-</div>
 
         <!-- Submitted Data Table Card -->
         <div class="col-sm-12 col-xl-12 profile-section">
