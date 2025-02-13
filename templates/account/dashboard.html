@@ -39,6 +39,57 @@
     <!-- Chat JS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!-- start generate pdf styling -->
+    <style>
+        /* Add these styles to your CSS */
+        .compact-form .form-control {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.875rem;
+            border-radius: 4px;
+        }
+        
+        .compact-form .form-control:focus {
+            border-color: #eb1616;
+            box-shadow: 0 0 0 0.2rem rgba(235, 22, 22, 0.25);
+        }
+        
+        .compact-form label {
+            color: #6c757d;
+        }
+        
+        .bg-secondary {
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        
+        .btn-primary {
+            background-color: #eb1616;
+            border-color: #eb1616;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #c91212;
+            border-color: #c91212;
+            transform: translateY(-1px);
+        }
+        
+        /* Dark theme form controls */
+        .form-control-sm.bg-dark {
+            background-color: #2A2E32 !important;
+        }
+        
+        .form-control-sm.bg-dark:focus {
+            background-color: #2A2E32 !important;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .col-md-6 {
+                margin-bottom: 0.5rem;
+            }
+        }
+        </style>
+
     
 </head>
 <body>
@@ -262,24 +313,41 @@
             </div>
         </div>
 
-        <!-- Generate PDF Report Section with Date Pickers -->
+        <!-- Generate PDF Report Section -->
         <div class="col-sm-12 col-xl-6 profile-section">
-            <div class="bg-secondary text-left rounded p-4" style="height: 650px">
-                <h6 class="mb-4">Generate PDF Report</h6>
-                <form method="get" action="{% url 'generate_pdf' %}">
+            <div class="bg-secondary rounded p-3" style="height: auto; min-height: 200px;">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h6 class="mb-0">Generate PDF Report</h6>
+                    <i class="fa fa-file-pdf text-primary"></i>
+                </div>
+                <form method="get" action="{% url 'generate_pdf' %}" class="compact-form">
                     {% csrf_token %}
-                    <div class="form-group">
-                        <label for="start_date">Start Date</label>
-                        <input type="date" name="start_date" id="start_date" class="form-control" required>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="start_date" class="small mb-1">Start Date</label>
+                                <input type="date" name="start_date" id="start_date" 
+                                       class="form-control form-control-sm bg-dark border-0 text-white" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="end_date" class="small mb-1">End Date</label>
+                                <input type="date" name="end_date" id="end_date" 
+                                       class="form-control form-control-sm bg-dark border-0 text-white" required>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="end_date">End Date</label>
-                        <input type="date" name="end_date" id="end_date" class="form-control" required>
+                    <div class="text-center mt-3">
+                        <button type="submit" class="btn btn-sm btn-primary px-4">
+                            <i class="fa fa-download me-1"></i> Generate Report
+                        </button>
                     </div>
-                    <button type="submit" class="btn btn-primary mt-3">Download PDF Report</button>
                 </form>
             </div>
         </div>
+
+
 
         <!-- Filter Section -->
         <div class="mb-4">
